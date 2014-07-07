@@ -12,7 +12,7 @@
   <form action="false" method="post">
     Rotation Offset:
     <input style='width:200px' id="slider" type="range"
-           min="0" max="2.0" step="0.05"/>
+           min="0" max="2.0" step="0.02"/>
   </form>
 
   <script src="../js/coffeechart.js"></script>
@@ -32,7 +32,6 @@ var chart = new Coffeechart.PieChart(data)
 var slider = document.getElementById('slider')
 
 var draw = function () {
-  console.log(slider.value);
   chart.rotationalOffset = Math.PI*slider.value;
   chart.draw(canvas);
 }

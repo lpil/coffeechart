@@ -48,7 +48,8 @@ class PieSlice
     canvas.arc @center..., @radius, @startAng, @endAng, false
     canvas.lineTo @center...
     canvas.closePath()
-    canvas.strokeStyle = colour
+    canvas.lineWidth = 3
+    canvas.strokeStyle = 'white'
     canvas.stroke()
     canvas.fillStyle = colour
     canvas.fill()
