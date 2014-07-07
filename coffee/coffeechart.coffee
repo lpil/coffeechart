@@ -7,6 +7,7 @@ class Coffeechart.PieChart
     @rotationalOffset ||= 0
 
     total = data.reduce ((a, e) -> e.amount + a), 0
+    data  = data.filter (e) -> e.amount > 0
     @data = data.map (e) ->
       e.ratio = e.amount / total
       e.chartTotal = total
@@ -19,8 +20,6 @@ class Coffeechart.PieChart
 
     # Use the drawColours if they exist, otherwise use the set colours
     colours = @drawColours || @colours
-    # Use the rotational offset if given
-    @rotationalOffset = rotationalOffset if rotationalOffset
     startAng = @rotationalOffset
 
     createSlice = (data, colour) ->
