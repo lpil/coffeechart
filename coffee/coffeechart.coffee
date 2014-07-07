@@ -1,26 +1,37 @@
-class PieChart
-  ### Takes an array of objects with name and amount properties ###
-  constructor: (data, colours = null) ->
-    @colours = ['red', 'limegreen', 'hotpink', 'orange', 'navy'] unless colours
+window.Coffeechart = {}
 
-    @total = data.reduce ((a, e) -> e.amount + a), 0
-    total  = @total
+class Coffeechart.PieChart
+  ### data: an array of objects with name and amount properties ###
+  constructor: (data, @rotationalOffset, @colours) ->
+    @colours ||= ['red', 'limegreen', 'hotpink', 'orange', 'navy']
+    @rotationalOffset ||= 0
 
+    total = data.reduce ((a, e) -> e.amount + a), 0
     @data = data.map (e) ->
       e.ratio = e.amount / total
       e.chartTotal = total
       e
 
-  draw: (canvas, colours) ->
-    startAng = 0
+  # Draw the Pie chart with the canvas context supplied
+  draw: (canvas, rotationalOffset) ->
+    canvas.width = canvas.width
+    context = canvas.getContext '2d'
+
+    # Use the drawColours if they exist, otherwise use the set colours
+    colours = @drawColours || @colours
+    # Use the rotational offset if given
+    @rotationalOffset = rotationalOffset if rotationalOffset
+    startAng = @rotationalOffset
+
     createSlice = (data, colour) ->
       endAng = startAng + Math.PI*(data.amount/data.chartTotal)*2
       slice = new PieSlice(250, 250, 200, startAng, endAng)
       startAng = slice.endAng
-      slice.draw canvas, colour
+      slice.draw context, colour
+
     @slices = @data.map (e, i) ->
       createSlice e, colours[i % colours.length]
-
+    this
 
 class PieSlice
   constructor: (centerX, centerY, @radius, @startAng, @endAng) ->
@@ -43,21 +54,3 @@ class PieSlice
     canvas.fillStyle = colour
     canvas.fill()
     this
-
-  clear: (canvas) ->
-    this.draw canvas, '#fff'
-    this
-
-canvas  = document.getElementById 'chart'
-context = canvas.getContext '2d'
-
-pie = new PieChart [
-  { name: 'foo', amount: 3 }
-  { name: 'bar', amount: 6 }
-  { name: 'bop', amount: 5 }
-  { name: 'kip', amount: 8 }
-]
-
-
-colours = ['red', 'limegreen', 'hotpink', 'orange', 'navy']
-pie.draw context, colours
