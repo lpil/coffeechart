@@ -39,7 +39,7 @@ var canvas  = document.getElementById('chart');
 
 var draw = function () {
   var data = getData();
-  var chart = new Coffeechart.PieChart(data)
+  var chart = new Coffeechart.PieChart(data, canvas);
   chart.options.rotationalOffset = Math.PI*rotate.value;
   chart.draw(canvas);
 }
@@ -61,18 +61,18 @@ function getData() {
    Fluff for the example
 */
 
-var rotate = document.getElementById('rotate')
+var rotate = document.getElementById('rotate');
 
-rotate.oninput=draw
-document.getElementById('s1').oninput=draw
-document.getElementById('s2').oninput=draw
-document.getElementById('s3').oninput=draw
-document.getElementById('s4').oninput=draw
-document.getElementById('s5').oninput=draw
-document.getElementById('s6').oninput=draw
-document.getElementById('s7').oninput=draw
-document.getElementById('s8').oninput=draw
-draw()
+rotate.oninput=draw;
+document.getElementById('s1').oninput=draw;
+document.getElementById('s2').oninput=draw;
+document.getElementById('s3').oninput=draw;
+document.getElementById('s4').oninput=draw;
+document.getElementById('s5').oninput=draw;
+document.getElementById('s6').oninput=draw;
+document.getElementById('s7').oninput=draw;
+document.getElementById('s8').oninput=draw;
+draw();
   </script>
   </body>
 </html>

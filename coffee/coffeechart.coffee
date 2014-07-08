@@ -41,10 +41,15 @@ class Coffeechart.PieChart
   A Pie chart!
   @param Array Containing objects with name and amount properties
   ###
-  constructor: (data, @options = {}) ->
+  constructor: (data, @canvas, options) ->
+    @options = options || {}
     @options.colours ||= Coffeechart.Utils.colours
     @options.colours.pop() if data.length % @options.colours.length - 1 == 0
     @options.rotationalOffset ||= 0
+    @options.centerX ||= 200
+    @options.centerY ||= 200
+    @options.radius  ||= 180
+    @options.lineColour  ||= 'white'
 
     total = data.reduce ((a, e) -> e.amount + a), 0
     data  = data.filter (e) -> e.amount > 0
@@ -61,47 +66,36 @@ class Coffeechart.PieChart
   Draw the Pie chart with the canvas context supplied
   @param Canvas HTML canvas to draw on
   ###
-  draw: (canvas) ->
-    canvas.width = canvas.width
-    context = canvas.getContext '2d'
+  draw: ->
+    @canvas.width = @canvas.width
+    context = @canvas.getContext '2d'
+    slices = @slices
+    options = @options
 
     # Use the drawColours if they exist, otherwise use the set colours
     colours = @options.drawColours || @options.colours
     startAng = @options.rotationalOffset
 
-    # Draw the slices
-    createSlice = (data, colour) ->
-      endAng = startAng + Math.PI*(data.amount/data.chartTotal)*2
-# TODO Replace Move chart size + offset to options
-      slice = new PieSlice(200, 200, 180, startAng, endAng)
-      startAng = slice.endAng
-      slice.drawSlice context, colour
-    @slices = @data.map (e, i, arr) ->
-      createSlice e, colours[i % colours.length]
-    (slice.drawLine(context) for slice in @slices) unless @slices.length < 2
-    this
-
-class PieSlice
-  constructor: (centerX, centerY, @radius, @startAng, @endAng) ->
-    @center   = [centerX, centerY]
-    @arcStart = Coffeechart.Utils.offsetPoint @center..., @radius, @startAng
-    @arcEnd   = Coffeechart.Utils.offsetPoint @center..., @radius, @endAng
-
-  drawSlice: (context, colour) ->
-    # Draw slice
-    context.moveTo @center...
-    context.beginPath()
-    context.lineTo @arcStart...
-    context.arc @center..., @radius, @startAng, @endAng, false
-    context.lineTo @center...
-    context.closePath()
-    context.fillStyle = colour
-    context.fill()
-    this
-  drawLine: (context, lineColour = 'white') ->
-    context.moveTo @center...
-    context.lineTo @arcStart...
-    context.strokeStyle = lineColour
-    context.lineWidth = 2
-    context.stroke()
-    this
+    @data.map (e, i, arr) ->
+      endAng = startAng + Math.PI*(e.amount/e.chartTotal)*2
+      colour = colours[i % colours.length]
+      center   = [options.centerX, options.centerY]
+      arcStart = Coffeechart.Utils.offsetPoint(
+        center..., options.radius, startAng)
+      arcEnd   = Coffeechart.Utils.offsetPoint(
+        center..., options.radius, endAng)
+      context.moveTo center...
+      context.beginPath()
+      context.lineTo arcStart...
+      context.arc center..., options.radius, startAng, endAng, false
+      context.lineTo center...
+      context.closePath()
+      context.fillStyle = colour
+      context.fill()
+      if arr.length > 1
+        context.moveTo center...
+        context.lineTo arcStart...
+        context.strokeStyle = options.lineColour
+        context.lineWidth = 2
+        context.stroke()
+      startAng = endAng

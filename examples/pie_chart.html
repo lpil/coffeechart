@@ -29,20 +29,23 @@ var data = [
     { name: 'vod', amount: 216 },
     { name: 'sit', amount: 28 }
   ];
-var options = {
+/*
+  var options = {
   sort: false /* Optional */
-}
+/* } */
 
-var chart = new Coffeechart.PieChart(data, options)
+
+/* var chart = new Coffeechart.PieChart(data, canvas, options) */
+var chart = new Coffeechart.PieChart(data, canvas)
 
 var slider = document.getElementById('slider')
 
 var draw = function () {
   chart.options.rotationalOffset = Math.PI*slider.value;
-  chart.draw(canvas);
+  chart.draw();
 }
-slider.onchange=draw
-slider.oninput=draw
+slider.onchange=draw;
+slider.oninput=draw;
 draw()
   </script>
   </body>
