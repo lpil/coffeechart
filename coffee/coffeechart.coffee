@@ -47,16 +47,20 @@ class PieSlice
     @arcStart = Coffeechart.Utils.offsetPoint @center..., @radius, @startAng
     @arcEnd   = Coffeechart.Utils.offsetPoint @center..., @radius, @endAng
 
-  draw: (canvas, colour) ->
+  draw: (canvas, colour, lineColour = 'white') ->
+    # Draw slice
     canvas.moveTo @center...
     canvas.beginPath()
     canvas.lineTo @arcStart...
     canvas.arc @center..., @radius, @startAng, @endAng, false
     canvas.lineTo @center...
     canvas.closePath()
-    canvas.lineWidth = 3
-    canvas.strokeStyle = 'white'
-    canvas.stroke()
     canvas.fillStyle = colour
     canvas.fill()
+    # Draw slice seperator line
+    canvas.moveTo @center...
+    canvas.lineTo @arcStart...
+    canvas.strokeStyle = lineColour
+    canvas.lineWidth = 2
+    canvas.stroke()
     this
