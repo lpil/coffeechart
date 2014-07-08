@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://localhost:35729/livereload.js?snipver=1"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Coffeechart</title>
+  </head>
+<body>
+  <div style='float:right;'>
+    <input style='width:200px;' id="s1" type="range"
+           min="0" max="200" step="1" value='10'/><br>
+    <input style='width:200px;' id="s2" type="range"
+           min="0" max="200" step="1" value='19'/><br>
+    <input style='width:200px;' id="s3" type="range"
+           min="0" max="200" step="1" value='27'/><br>
+    <input style='width:200px;' id="s4" type="range"
+           min="0" max="200" step="1" value='34'/><br>
+    <input style='width:200px;' id="s5" type="range"
+           min="0" max="200" step="1" value='26'/><br>
+    <input style='width:200px;' id="s6" type="range"
+           min="0" max="200" step="1" value='15'/><br>
+    <input style='width:200px;' id="s7" type="range"
+           min="0" max="200" step="1" value='7'/><br>
+    <input style='width:200px;' id="s8" type="range"
+           min="0" max="200" step="1" value='12'/><br>
+  </div>
+  <canvas width="800" height="400" id="chart" style="border:1px dotted #333">
+  </canvas>
+  <form action="false" method="post">
+    Rotation Offset:
+    <input style='width:200px' id="rotate" type="range"
+           min="0" max="2.0" step="0.02"/>
+  </form>
+
+  <script src="../js/coffeechart.js"></script>
+  <script type="text/javascript" charset="utf-8">
+var canvas  = document.getElementById('chart');
+
+var draw = function () {
+  var data = getData();
+  var chart = new Coffeechart.PieChart(data)
+  chart.options.rotationalOffset = Math.PI*rotate.value;
+  chart.draw(canvas);
+}
+
+function getData() {
+  return [
+      { name: 'foo', amount: parseInt(document.getElementById('s1').value) },
+      { name: 'bar', amount: parseInt(document.getElementById('s2').value) },
+      { name: 'bop', amount: parseInt(document.getElementById('s3').value) },
+      { name: 'kip', amount: parseInt(document.getElementById('s4').value) },
+      { name: 'zip', amount: parseInt(document.getElementById('s5').value) },
+      { name: 'nap', amount: parseInt(document.getElementById('s6').value) },
+      { name: 'sit', amount: parseInt(document.getElementById('s7').value) },
+      { name: 'rap', amount: parseInt(document.getElementById('s8').value) }
+    ];
+}
+
+/*
+   Fluff for the example
+*/
+
+var rotate = document.getElementById('rotate')
+
+rotate.oninput=draw
+document.getElementById('s1').oninput=draw
+document.getElementById('s2').oninput=draw
+document.getElementById('s3').oninput=draw
+document.getElementById('s4').oninput=draw
+document.getElementById('s5').oninput=draw
+document.getElementById('s6').oninput=draw
+document.getElementById('s7').oninput=draw
+document.getElementById('s8').oninput=draw
+draw()
+  </script>
+  </body>
+</html>

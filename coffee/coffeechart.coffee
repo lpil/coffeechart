@@ -6,6 +6,22 @@ class Coffeechart.Utils
   @colours = ['#ac4141', '#d28445', '#f4bf75', '#90a959',
               '#75b5aa', '#6a9fb5', '#aa759f', '#8f5536']
   ###
+  Takes 2 objects, and compared them based upon a given property
+  For use with the array sort method
+  @param Object a
+  @param Object b
+  @param String Property to compare
+  @return Num 1 if a.p > b.p, 0 if equal, -1 otherwise
+  ###
+  @compareObjProp = (a, b, prop) ->
+    if a[prop] < b[prop]
+      -1
+    else if a[prop] > b[prop]
+      1
+    else
+      0
+
+  ###
   Calculates the co-ords of a point from a point, distance, and angle
   @param Num X axis coordinate
   @param Num Y axis coordinate
@@ -18,6 +34,7 @@ class Coffeechart.Utils
       startX + Math.cos(angle)*distance,
       startY + Math.sin(angle)*distance
     ]
+
 
 class Coffeechart.PieChart
   ###
@@ -35,6 +52,10 @@ class Coffeechart.PieChart
       e.ratio = e.amount / total
       e.chartTotal = total
       e
+    if @options.sort == true
+      compare = (a, b) ->
+        Coffeechart.Utils.compareObjProp(a, b, 'ratio')
+      @data = @data.sort(compare)
 
   ###
   Draw the Pie chart with the canvas context supplied
@@ -48,15 +69,16 @@ class Coffeechart.PieChart
     colours = @options.drawColours || @options.colours
     startAng = @options.rotationalOffset
 
+    # Draw the slices
     createSlice = (data, colour) ->
       endAng = startAng + Math.PI*(data.amount/data.chartTotal)*2
 # TODO Replace Move chart size + offset to options
-      slice = new PieSlice(250, 250, 200, startAng, endAng)
+      slice = new PieSlice(200, 200, 180, startAng, endAng)
       startAng = slice.endAng
-      slice.draw context, colour
-
-    @slices = @data.map (e, i) ->
+      slice.drawSlice context, colour
+    @slices = @data.map (e, i, arr) ->
       createSlice e, colours[i % colours.length]
+    (slice.drawLine(context) for slice in @slices) unless @slices.length < 2
     this
 
 class PieSlice
@@ -65,20 +87,21 @@ class PieSlice
     @arcStart = Coffeechart.Utils.offsetPoint @center..., @radius, @startAng
     @arcEnd   = Coffeechart.Utils.offsetPoint @center..., @radius, @endAng
 
-  draw: (canvas, colour, lineColour = 'white') ->
+  drawSlice: (context, colour) ->
     # Draw slice
-    canvas.moveTo @center...
-    canvas.beginPath()
-    canvas.lineTo @arcStart...
-    canvas.arc @center..., @radius, @startAng, @endAng, false
-    canvas.lineTo @center...
-    canvas.closePath()
-    canvas.fillStyle = colour
-    canvas.fill()
-    # Draw slice separator line
-    canvas.moveTo @center...
-    canvas.lineTo @arcStart...
-    canvas.strokeStyle = lineColour
-    canvas.lineWidth = 2
-    canvas.stroke()
+    context.moveTo @center...
+    context.beginPath()
+    context.lineTo @arcStart...
+    context.arc @center..., @radius, @startAng, @endAng, false
+    context.lineTo @center...
+    context.closePath()
+    context.fillStyle = colour
+    context.fill()
+    this
+  drawLine: (context, lineColour = 'white') ->
+    context.moveTo @center...
+    context.lineTo @arcStart...
+    context.strokeStyle = lineColour
+    context.lineWidth = 2
+    context.stroke()
     this

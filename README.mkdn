@@ -4,9 +4,9 @@ Making charts and graphs with Coffeescript!
 
 ## Notes
 
-I've never even used a Javascript library before, so yeah, this is probably
-going to be a huge mess. Bare with me.
+I've never even used a Javascript library before, let alone made one, so yeah,
+this is probably going to be a huge mess. Bare with me.
 
 ## Thanks to
 
-* [Christ Kepson for his base16 colourscheme](https://github.com/chriskempson/base16)
+* [Chris Kepson for his base16 colourscheme](https://github.com/chriskempson/base16)
