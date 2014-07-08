@@ -2,17 +2,31 @@ window.Coffeechart = {}
 
 # Utility functions used by multiple charts
 class Coffeechart.Utils
+  # Thanks to https://github.com/chriskempson/base16
+  @colours = ['#ac4141', '#d28445', '#f4bf75', '#90a959',
+              '#75b5aa', '#6a9fb5', '#aa759f', '#8f5536']
+  ###
+  Calculates the co-ords of a point from a point, distance, and angle
+  @param Num X axis coordinate
+  @param Num Y axis coordinate
+  @param Num Distance from given point
+  @param Num Direction from given point in radians
+  @return Array [x,y] Coordinates of new point
+  ###
   @offsetPoint = (startX, startY, distance, angle) ->
     [
       startX + Math.cos(angle)*distance,
       startY + Math.sin(angle)*distance
     ]
 
-# Draw a Pie Chart
 class Coffeechart.PieChart
-  ### data: an array of objects with name and amount properties ###
+  ###
+  A Pie chart!
+  @param Array Containing objects with name and amount properties
+  ###
   constructor: (data, @options = {}) ->
-    @options.colours ||= ['red', 'limegreen', 'hotpink', 'orange', 'navy']
+    @options.colours ||= Coffeechart.Utils.colours
+    @options.colours.pop() if data.length % @options.colours.length - 1 == 0
     @options.rotationalOffset ||= 0
 
     total = data.reduce ((a, e) -> e.amount + a), 0
@@ -22,8 +36,11 @@ class Coffeechart.PieChart
       e.chartTotal = total
       e
 
-  # Draw the Pie chart with the canvas context supplied
-  draw: (canvas, rotationalOffset) ->
+  ###
+  Draw the Pie chart with the canvas context supplied
+  @param Canvas HTML canvas to draw on
+  ###
+  draw: (canvas) ->
     canvas.width = canvas.width
     context = canvas.getContext '2d'
 
@@ -33,6 +50,7 @@ class Coffeechart.PieChart
 
     createSlice = (data, colour) ->
       endAng = startAng + Math.PI*(data.amount/data.chartTotal)*2
+# TODO Replace Move chart size + offset to options
       slice = new PieSlice(250, 250, 200, startAng, endAng)
       startAng = slice.endAng
       slice.draw context, colour
@@ -57,7 +75,7 @@ class PieSlice
     canvas.closePath()
     canvas.fillStyle = colour
     canvas.fill()
-    # Draw slice seperator line
+    # Draw slice separator line
     canvas.moveTo @center...
     canvas.lineTo @arcStart...
     canvas.strokeStyle = lineColour
