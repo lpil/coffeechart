@@ -1,5 +1,14 @@
 window.Coffeechart = {}
 
+# Utility functions used by multiple charts
+class Coffeechart.Utils
+  @offsetPoint = (startX, startY, distance, angle) ->
+    [
+      startX + Math.cos(angle)*distance,
+      startY + Math.sin(angle)*distance
+    ]
+
+# Draw a Pie Chart
 class Coffeechart.PieChart
   ### data: an array of objects with name and amount properties ###
   constructor: (data, @options = {}) ->
@@ -35,11 +44,8 @@ class Coffeechart.PieChart
 class PieSlice
   constructor: (centerX, centerY, @radius, @startAng, @endAng) ->
     @center   = [centerX, centerY]
-    @arcStart = getPoint centerX, centerY, @radius, @startAng
-    @arcEnd   = getPoint centerX, centerY, @radius, @endAng
-
-  getPoint = (centX, centY, radius, angle) ->
-    [centX + Math.cos(angle)*radius, centY + Math.sin(angle)*radius]
+    @arcStart = Coffeechart.Utils.offsetPoint @center..., @radius, @startAng
+    @arcEnd   = Coffeechart.Utils.offsetPoint @center..., @radius, @endAng
 
   draw: (canvas, colour) ->
     canvas.moveTo @center...
