@@ -2,9 +2,9 @@ window.Coffeechart = {}
 
 class Coffeechart.PieChart
   ### data: an array of objects with name and amount properties ###
-  constructor: (data, @rotationalOffset, @colours) ->
-    @colours ||= ['red', 'limegreen', 'hotpink', 'orange', 'navy']
-    @rotationalOffset ||= 0
+  constructor: (data, @options = {}) ->
+    @options.colours ||= ['red', 'limegreen', 'hotpink', 'orange', 'navy']
+    @options.rotationalOffset ||= 0
 
     total = data.reduce ((a, e) -> e.amount + a), 0
     data  = data.filter (e) -> e.amount > 0
@@ -19,8 +19,8 @@ class Coffeechart.PieChart
     context = canvas.getContext '2d'
 
     # Use the drawColours if they exist, otherwise use the set colours
-    colours = @drawColours || @colours
-    startAng = @rotationalOffset
+    colours = @options.drawColours || @options.colours
+    startAng = @options.rotationalOffset
 
     createSlice = (data, colour) ->
       endAng = startAng + Math.PI*(data.amount/data.chartTotal)*2

@@ -26,13 +26,15 @@ var data = [
     { name: 'kip', amount: 216 },
     { name: 'zip', amount: 39 }
   ];
+var options = {
+}
 
-var chart = new Coffeechart.PieChart(data)
+var chart = new Coffeechart.PieChart(data, options)
 
 var slider = document.getElementById('slider')
 
 var draw = function () {
-  chart.rotationalOffset = Math.PI*slider.value;
+  chart.options.rotationalOffset = Math.PI*slider.value;
   chart.draw(canvas);
 }
 slider.onchange=draw
