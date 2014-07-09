@@ -20,7 +20,6 @@ class Coffeechart.Utils
       1
     else
       0
-
   ###
   Calculates the co-ords of a point from a point, distance, and angle
   @param Num X axis coordinate
@@ -40,6 +39,9 @@ class Coffeechart.PieChart
   ###
   A Pie chart!
   @param Array Containing objects with name and amount properties
+  @param Canvas The HTML5 canvas to draw to
+  @param Object PieChart Options
+  @return Object Self
   ###
   constructor: (data, @canvas, options) ->
     @options = options || {}
@@ -49,7 +51,11 @@ class Coffeechart.PieChart
     @options.centerX ||= 200
     @options.centerY ||= 200
     @options.radius  ||= 180
-    @options.lineColour  ||= 'white'
+    @options.lineColour ||= 'white'
+    @options.sort   = false unless @options.legend?
+    @options.legend = true unless @options.legend?
+    @options.legendY ||= (@options.centerY - @options.radius)*2
+    @options.legendX ||= @options.centerX*2 + @options.legendY/2
 
     total = data.reduce ((a, e) -> e.amount + a), 0
     data  = data.filter (e) -> e.amount > 0
@@ -69,33 +75,48 @@ class Coffeechart.PieChart
   draw: ->
     @canvas.width = @canvas.width
     context = @canvas.getContext '2d'
-    slices = @slices
-    options = @options
-
     # Use the drawColours if they exist, otherwise use the set colours
     colours = @options.drawColours || @options.colours
     startAng = @options.rotationalOffset
-
-    @data.map (e, i, arr) ->
+    # Loop over each item of data, and draw a slice for each
+    for e, i in @data
       endAng = startAng + Math.PI*(e.amount/e.chartTotal)*2
       colour = colours[i % colours.length]
-      center   = [options.centerX, options.centerY]
+      center   = [@options.centerX, @options.centerY]
       arcStart = Coffeechart.Utils.offsetPoint(
-        center..., options.radius, startAng)
+        center..., @options.radius, startAng)
       arcEnd   = Coffeechart.Utils.offsetPoint(
-        center..., options.radius, endAng)
+        center..., @options.radius, endAng)
       context.moveTo center...
       context.beginPath()
       context.lineTo arcStart...
-      context.arc center..., options.radius, startAng, endAng, false
+      context.arc center..., @options.radius, startAng, endAng, false
       context.lineTo center...
       context.closePath()
       context.fillStyle = colour
       context.fill()
-      if arr.length > 1
+      # If there's more than 1 slice, draw divider lines
+      if @data.length > 1
+        context.beginPath()
         context.moveTo center...
         context.lineTo arcStart...
-        context.strokeStyle = options.lineColour
+        context.moveTo center...
+        context.lineTo arcEnd...
+        context.closePath()
+        context.strokeStyle = @options.lineColour
         context.lineWidth = 2
         context.stroke()
       startAng = endAng
+    # Draw the legend
+    if @options.legend
+      legendY = @options.legendY
+      context.textBaseline = 'middle'
+      context.font = 'normal 14px arial'
+      for e, i in @data
+        colour = colours[i % colours.length]
+        context.fillStyle = colour
+        context.fillRect(@options.legendX, legendY, 20, 20)
+        context.fillStyle = 'black'
+        context.textAlign = 'left'
+        context.fillText( e.name, @options.legendX + 30, legendY + 10)
+        legendY += 30

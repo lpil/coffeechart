@@ -7,7 +7,7 @@
   <title>Coffeechart</title>
   </head>
 <body>
-  <canvas width="800" height="600" id="chart" style="border:1px dotted #333">
+  <canvas width="800" height="400" id="chart" style="border:1px dotted #333">
   </canvas>
   <form action="false" method="post">
     Rotation Offset:
@@ -26,17 +26,18 @@ var data = [
     { name: 'kip', amount: 216 },
     { name: 'zip', amount: 39 },
     { name: 'nap', amount: 95 },
-    { name: 'vod', amount: 216 },
-    { name: 'sit', amount: 28 }
+    { name: 'sit', amount: 116 },
+    { name: 'rap', amount: 28 }
   ];
 
-  var options = {
-  sort: false /* Optional */
+var options = {
+    sort:   false, /* Optional */
+    legend: true  /* Optional */
   }
 
 
 /* var chart = new Coffeechart.PieChart(data, canvas, options) */
-var chart = new Coffeechart.PieChart(data, canvas)
+var chart = new Coffeechart.PieChart(data, canvas, options)
 
 var slider = document.getElementById('slider')
 
