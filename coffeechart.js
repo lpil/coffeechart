@@ -78,10 +78,6 @@
         ops.colours.pop();
       }
 
-      if (ops.legend === null) {
-        ops.legend = true;
-      }
-
       total = data.reduce(function(a, e) {
         return e.amount + a;
       }, 0);
