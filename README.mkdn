@@ -1,6 +1,7 @@
 # Coffeechart!
 
-Making charts and graphs with Coffeescript!
+Making charts and graphs with Javascript. I'd like to know some good design
+patterns for this sort of stuff.
 
 ## Thanks to
 
