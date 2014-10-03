@@ -10,14 +10,12 @@
     ];
 
 
-    /*
-    Takes 2 objects, and compared them based upon a given property
-    For use with the array sort method
-    @param Object a
-    @param Object b
-    @param String Property to compare
-    @return Num 1 if a.p > b.p, 0 if equal, -1 otherwise
-     */
+    // Takes 2 objects, and compared them based upon a given property
+    // For use with the array sort method
+    // @param Object a
+    // @param Object b
+    // @param String Property to compare
+    // @return Num 1 if a.p > b.p, 0 if equal, -1 otherwise
     Utils.compareObjProp = function(a, b, prop) {
       if (a[prop] < b[prop]) {
         return -1;
@@ -29,14 +27,12 @@
     };
 
 
-    /*
-    Calculates the co-ords of a point from a point, distance, and angle
-    @param Num X axis coordinate
-    @param Num Y axis coordinate
-    @param Num Distance from given point
-    @param Num Direction from given point in radians
-    @return Array [x,y] Coordinates of new point
-     */
+    // Calculates the co-ords of a point from a point, distance, and angle
+    // @param Num X axis coordinate
+    // @param Num Y axis coordinate
+    // @param Num Distance from given point
+    // @param Num Direction from given point in radians
+    // @return Array [x,y] Coordinates of new point
     Utils.offsetPoint = function(startX, startY, distance, angle) {
       return [
         startX + Math.cos(angle) * distance, 
@@ -49,13 +45,11 @@
 
   Coffeechart.PieChart = (function() {
 
-    /*
-    A Pie chart!
-    @param Array Containing objects with name and amount properties
-    @param Canvas The HTML5 canvas to draw to
-    @param Object PieChart Options
-    @return Object Self
-     */
+    // A Pie chart!
+    // @param Array Containing objects with name and amount properties
+    // @param Canvas The HTML5 canvas to draw to
+    // @param Object PieChart Options
+    // @return Object Self
     function PieChart(data, canvas, ops) {
       var total,
           vals = [];
@@ -116,63 +110,110 @@
     }
 
 
-    /*
-    Draw the Pie chart with the canvas context supplied
-    @param Canvas HTML canvas to draw on
-     */
-
+    // Draw the Pie chart with the canvas context supplied
+    // @param Canvas HTML canvas to draw on
     PieChart.prototype.draw = function() {
-      var arcEnd, arcStart, center, colour, colours, context, e, endAng, i, legendY, startAng, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _results;
+      var 
+          _j,
+          _len1,
+          data,
+          _ref3,
+          _results,
+          arcEnd,
+          arcStart,
+          c,
+          center,
+          colour,
+          colours,
+          ops,
+          e,
+          endAng,
+          legendY,
+          offsetPoint,
+          startAng
+            ;
+
+      // Blank the canvas
       this.canvas.width = this.canvas.width;
-      context = this.canvas.getContext('2d');
-      colours = this.ops.drawColours || this.ops.colours;
-      startAng = this.ops.rotationalOffset;
-      _ref = this.data;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        e = _ref[i];
-        endAng = startAng + Math.PI * (e.amount / e.chartTotal) * 2;
+
+      ops      = this.ops;
+      c        = this.canvas.getContext('2d');
+      data     = this.data;
+      center   = [ops.centerX, ops.centerY];
+      colours  = ops.drawColours || this.ops.colours;
+      startAng = ops.rotationalOffset;
+
+      for (var i = 0, l = data.length; i < l; i ++) {
+        e = data[i];
+
         colour = colours[i % colours.length];
-        center = [this.ops.centerX, this.ops.centerY];
-        arcStart = (_ref1 = Coffeechart.Utils).offsetPoint.apply(_ref1, [].slice.call(center).concat([this.ops.radius], [startAng]));
-        arcEnd = (_ref2 = Coffeechart.Utils).offsetPoint.apply(_ref2, [].slice.call(center).concat([this.ops.radius], [endAng]));
-        context.moveTo.apply(context, center);
-        context.beginPath();
-        context.lineTo.apply(context, arcStart);
-        context.arc.apply(context, [].slice.call(center).concat([this.ops.radius], [startAng], [endAng], [false]));
-        context.lineTo.apply(context, center);
-        context.closePath();
-        context.fillStyle = colour;
-        context.fill();
-        if (this.data.length > 1) {
-          context.beginPath();
-          context.moveTo.apply(context, center);
-          context.lineTo.apply(context, arcStart);
-          context.moveTo.apply(context, center);
-          context.lineTo.apply(context, arcEnd);
-          context.closePath();
-          context.strokeStyle = this.ops.lineColour;
-          context.lineWidth = 2;
-          context.stroke();
+        endAng = startAng + Math.PI * (e.amount / e.chartTotal) * 2;
+        offsetPoint = Coffeechart.Utils.offsetPoint;
+
+        arcStart = offsetPoint(
+            center[0],
+            center[1],
+            ops.radius,
+            startAng
+            );
+        arcEnd = offsetPoint(
+            center[0],
+            center[1],
+            ops.radius,
+            endAng
+            );
+
+        c.moveTo(center[0], center[1]);
+        c.beginPath();
+        c.fillStyle = colour;
+
+        c.lineTo(arcStart[0], arcStart[1]);
+        c.arc(
+            center[0],
+            center[1],
+            ops.radius,
+            startAng,
+            endAng,
+            false);
+        c.lineTo(center[0], center[1]);
+
+        c.closePath();
+        c.fill();
+
+        // If there is more than once slice, draw divider lines
+        if (data.length > 1) {
+          c.beginPath();
+          c.lineWidth = 2;
+          c.strokeStyle = ops.lineColour;
+
+          c.moveTo(center[0], center[1]);
+          c.lineTo(arcStart[0], arcStart[1]);
+          c.moveTo(center[0], center[1]);
+          c.lineTo(arcEnd[0], arcEnd[1]);
+
+          c.closePath();
+          c.stroke();
         }
         startAng = endAng;
       }
+
+      // Draw legend
       if (this.ops.legend) {
         legendY = this.ops.legendY;
-        context.textBaseline = 'middle';
-        context.font = 'normal 14px arial';
+        c.textBaseline = 'middle';
+        c.font = 'normal 14px arial';
         _ref3 = this.data;
         _results = [];
         for (i = _j = 0, _len1 = _ref3.length; _j < _len1; i = ++_j) {
           e = _ref3[i];
           colour = colours[i % colours.length];
-          context.fillStyle = colour;
-          context.fillRect(this.ops.legendX, legendY, 20, 20);
-          context.fillStyle = 'black';
-          context.textAlign = 'left';
-          context.fillText(e.name, this.ops.legendX + 30, legendY + 10);
-          _results.push(legendY += 30);
+          c.fillStyle = colour;
+          c.fillRect(this.ops.legendX, legendY, 20, 20);
+          c.fillStyle = 'black';
+          c.textAlign = 'left';
+          c.fillText(e.name, this.ops.legendX + 30, legendY + 10);
+          legendY += 30;
         }
-        return _results;
       }
     };
 
