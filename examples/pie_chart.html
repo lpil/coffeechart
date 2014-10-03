@@ -15,7 +15,7 @@
            min="0" max="2.0" step="0.02"/>
   </form>
 
-  <script src="/coffeechart.js"></script>
+  <script src="../coffeechart.js"></script>
   <script type="text/javascript" charset="utf-8">
 var canvas  = document.getElementById('chart');
 
@@ -42,7 +42,7 @@ var chart = new Coffeechart.PieChart(data, canvas, options)
 var slider = document.getElementById('slider')
 
 var draw = function () {
-  chart.options.rotationalOffset = Math.PI*slider.value;
+  chart.ops.rotationalOffset = Math.PI*slider.value;
   chart.draw();
 }
 slider.onchange=draw;
