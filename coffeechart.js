@@ -49,7 +49,7 @@
     // @param Array Containing objects with name and amount properties
     // @param Canvas The HTML5 canvas to draw to
     // @param Object PieChart Options
-    // @return Object Self
+    // @return Array Data suitable for building a HTML legend
     function PieChart(data, canvas, ops) {
       var total,
           vals = [];
@@ -211,6 +211,20 @@
         }
       }());
 
+      (function() {
+        // Return useful info
+        for (var i = 0, l = data.length; i < l; i ++) {
+          e = data[i];
+          results.push({
+            name:   e.name,
+            amount: e.amount,
+            ratio:  e.ratio,
+            colour: colour
+          });
+        }
+      }());
+      console.log(results);
+      return results;
     };
 
     return PieChart;
