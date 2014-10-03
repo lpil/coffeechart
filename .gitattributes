@@ -1,0 +1,3 @@
+*.min -diff
+*.min -merge
+*.min binary
