@@ -113,25 +113,20 @@
     // Draw the Pie chart with the canvas context supplied
     // @param Canvas HTML canvas to draw on
     PieChart.prototype.draw = function() {
-      var 
-          _j,
-          _len1,
+      var results = [],
           data,
-          _ref3,
-          _results,
           arcEnd,
           arcStart,
           c,
           center,
           colour,
           colours,
-          ops,
           e,
           endAng,
           legendY,
           offsetPoint,
-          startAng
-            ;
+          ops,
+          startAng;
 
       // Blank the canvas
       this.canvas.width = this.canvas.width;
@@ -198,23 +193,24 @@
       }
 
       // Draw legend
-      if (this.ops.legend) {
-        legendY = this.ops.legendY;
-        c.textBaseline = 'middle';
-        c.font = 'normal 14px arial';
-        _ref3 = this.data;
-        _results = [];
-        for (i = _j = 0, _len1 = _ref3.length; _j < _len1; i = ++_j) {
-          e = _ref3[i];
-          colour = colours[i % colours.length];
-          c.fillStyle = colour;
-          c.fillRect(this.ops.legendX, legendY, 20, 20);
-          c.fillStyle = 'black';
-          c.textAlign = 'left';
-          c.fillText(e.name, this.ops.legendX + 30, legendY + 10);
-          legendY += 30;
+      (function() {
+        if (ops.legend) {
+          legendY = ops.legendY;
+          c.textBaseline = 'middle';
+          c.font = 'normal 14px arial';
+          for (var i = 0, l = data.length; i < l; i ++) {
+            e = data[i];
+            colour = colours[i % colours.length];
+            c.fillStyle = colour;
+            c.fillRect(ops.legendX, legendY, 20, 20);
+            c.fillStyle = 'black';
+            c.textAlign = 'left';
+            c.fillText(e.name, ops.legendX + 30, legendY + 10);
+            legendY += 30;
+          }
         }
-      }
+      }());
+
     };
 
     return PieChart;
