@@ -9,6 +9,11 @@
       '#aa759f', '#8f5536'
     ];
 
+    // Used for setting default values for variables
+    // Like `||= bar` in ruby
+    // @param variable
+    // @param value
+    // @return value is variable is undefined, else the variable
     utils.defalt = function defalt(variable, value) {
       return (variable === undefined) ? value : variable;
     };
