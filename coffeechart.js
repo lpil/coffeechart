@@ -1,13 +1,17 @@
 (function() {
-  var Coffeechart = {};
+  var coffeechart = {};
 
-  Coffeechart.Utils = (function() {
-    function Utils() {}
+  coffeechart.utils = (function() {
+    function utils() {}
 
-    Utils.colours = [
+    utils.colours = [
       '#ac4141', '#d28445', '#f4bf75', '#90a959', '#75b5aa', '#6a9fb5',
       '#aa759f', '#8f5536'
     ];
+
+    utils.defalt = function defalt(variable, value) {
+      return (variable === undefined) ? value : variable;
+    };
 
 
     // Takes 2 objects, and compared them based upon a given property
@@ -16,7 +20,7 @@
     // @param Object b
     // @param String Property to compare
     // @return Num 1 if a.p > b.p, 0 if equal, -1 otherwise
-    Utils.compareObjProp = function(a, b, prop) {
+    utils.compareObjProp = function(a, b, prop) {
       if (a[prop] < b[prop]) {
         return -1;
       } else if (a[prop] > b[prop]) {
@@ -33,49 +37,43 @@
     // @param Num Distance from given point
     // @param Num Direction from given point in radians
     // @return Array [x,y] Coordinates of new point
-    Utils.offsetPoint = function(startX, startY, distance, angle) {
+    utils.offsetPoint = function(startX, startY, distance, angle) {
       return [
-        startX + Math.cos(angle) * distance, 
+        startX + Math.cos(angle) * distance,
         startY + Math.sin(angle) * distance
       ];
     };
 
-    return Utils;
+    return utils;
   })();
 
-  Coffeechart.PieChart = (function() {
+  coffeechart.pieChart = (function() {
 
     // A Pie chart!
     // @param Array Containing objects with name and amount properties
     // @param Canvas The HTML5 canvas to draw to
-    // @param Object PieChart Options
+    // @param Object pieChart Options
     // @return Array Data suitable for building a HTML legend
-    function PieChart(data, canvas, ops) {
-      var total,
-          vals = [];
+    function pieChart(data, canvas, ops) {
+      var vals = [],
+          defalt = coffeechart.utils.defalt,
+          total;
 
-      ops = (ops === undefined) ? {} : ops;
+      ops = defalt(ops,  {});
 
-      ops.rotationalOffset = (ops.rotationalOffset === undefined) ?
-        0       : ops.rotationalOffset;
-      ops.centerX  = (ops.centerX === undefined) ?
-        200     : ops.centerX;
-      ops.centerY = (ops.centerY === undefined) ?
-        200     : ops.centerY;
-      ops.radius = (ops.radius === undefined) ?
-        180     : ops.radius;
-      ops.lineColour = (ops.lineColour === undefined) ?
-        'white' : ops.lineColour;
-      ops.legend = (ops.radius === undefined) ?
-        180     : ops.radius;
+      ops.rotationalOffset  = defalt(ops.rotationalOffset, 0);
+      ops.centerX           = defalt(ops.centerX,          200);
+      ops.centerY           = defalt(ops.centerY,          200);
+      ops.radius            = defalt(ops.radius,           180);
+      ops.lineColour        = defalt(ops.lineColour,       'white');
+      ops.legend            = defalt(ops.legend,           false);
 
-      ops.legendY = (ops.legendY === undefined) ?
-        (ops.centerY - ops.radius) * 2 : ops.legendY;
-      ops.legendX = (ops.legendX === undefined) ?
-        (ops.centerX * 2 + ops.legendY / 2) : ops.legendX;
+      ops.legendY = defalt(ops.legendY,
+          (ops.centerY - ops.radius) * 2);
+      ops.legendX = defalt(ops.legendX,
+          (ops.centerX * 2 + ops.legendY / 2));
 
-      ops.colours =
-        (ops.colours === undefined) ? Coffeechart.Utils.colours : ops.colours;
+      ops.colours = defalt(ops.colours, coffeechart.utils.colours);
       if (data.length % ops.colours.length - 1 === 0) {
         ops.colours.pop();
       }
@@ -101,7 +99,7 @@
       }());
 
       vals = vals.sort(function(a, b) {
-        return Coffeechart.Utils.compareObjProp(a, b, 'ratio');
+        return coffeechart.utils.compareObjProp(a, b, 'ratio');
       });
 
       this.canvas = canvas;
@@ -112,7 +110,7 @@
 
     // Draw the Pie chart with the canvas context supplied
     // @param Canvas HTML canvas to draw on
-    PieChart.prototype.draw = function() {
+    pieChart.prototype.draw = function() {
       var results = [],
           data,
           arcEnd,
@@ -143,7 +141,7 @@
 
         colour = colours[i % colours.length];
         endAng = startAng + Math.PI * (e.amount / e.chartTotal) * 2;
-        offsetPoint = Coffeechart.Utils.offsetPoint;
+        offsetPoint = coffeechart.utils.offsetPoint;
 
         arcStart = offsetPoint(
             center[0],
@@ -226,8 +224,8 @@
       return results;
     };
 
-    return PieChart;
+    return pieChart;
   })();
 
-  window.Coffeechart = Coffeechart;
+  window.coffeechart = coffeechart;
 }).call(this);

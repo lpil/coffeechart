@@ -38,7 +38,7 @@ var canvas  = document.getElementById('chart');
 
 var draw = function () {
   var data = getData();
-  var chart = new Coffeechart.PieChart(data, canvas);
+  var chart = new coffeechart.pieChart(data, canvas);
   chart.options.rotationalOffset = Math.PI*rotate.value;
   chart.draw(canvas);
 }
